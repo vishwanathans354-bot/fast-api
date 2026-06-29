@@ -1,44 +1,56 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
+import random
+
+app = FastAPI()
 
 
-app=FastAPI()
-class item(BaseModel):
-    name:str
-    price:float
-    product: str
+# Pydantic Model
+class Post(BaseModel):
+    title: str
+    content: str
+    published: bool =True
+    
+    
+my_posts = [{"title": "Post 1", "content": "Content of post 1", "published": True, "id": 1},
+            {"title": "Post 2", "content": "Content of post 2", "published": True, "id": 2},
+            {"title": "Post 3", "content": "Content of post 3", "published": True, "id": 3}
+        
+            ]
+
+
+@app.get("/posts/{id}")
+def get_post(id: int):
+    for post in my_posts:
+        if post["id"] == id:
+            return {"post_detail": post}
+        
+  
+
     
 
-
+# Home Route
 @app.get("/")
-def viswa():
-    return {'message': 'Hello, World!'} 
-
-
-@app.get("/next")
-def next():
-    return {"message": "second route create successfully"}
+def home():
+    return {"message": "Welcome to FastAPI"}
 
 
 
-@app.get("/item/{item_id}" )
-def id(item_id: int, query: str = None , name: str = None):
-     return {"item_id": item_id, "query": query, "name": name}
- 
- 
-@app.get("/products")
-def list_products(skip: int = 0, limit: int = 10):
-     return {"skip": skip, "limit": limit}
-  
-   
-@app.post("/update")
-def update_item(item_id: int, name: str, price: float):
-    return {"item_id": item_id, "name": name, "price": price}
+
+# Get All Posts
+@app.get("/posts")
+def get_posts():
+    return {"data": "This is your posts"}
 
 
-@app.post("/create")
-def create_item(item: item):
-    return item
+# Create Post 
+@app.post("/posts")
+def create_posts(new_post: Post):
+    return {
+        "data": f"Post is created with title '{new_post.title}', "
+                f"content '{new_post.content}', "
+                f"published status '{new_post.published}'"
+    }
 
 
-
+#
